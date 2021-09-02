@@ -1,0 +1,13 @@
+quarkus:
+  application:
+    name: otelnative
+  opentelemetry:
+    tracer:
+      exporter:
+        otlp:
+          endpoint: http://erewhon.com:4317
+  oidc:
+    auth-server-url: https://erewhon.com
+
+erewhon:
+  user: ${runtime_username}

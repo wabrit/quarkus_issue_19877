@@ -1,0 +1,32 @@
+####
+# This Dockerfile is used in order to build a container that runs the Quarkus application in native (no JVM) mode
+#
+# Before building the container image run:
+#
+# ./mvnw package -Pnative
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.native -t quarkus/bandtemplate .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/bandtemplate
+#
+###
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --chown=1001:root target/*-runner /work/application
+
+# Set timezone to align with Eclipse; this will help us correctly interpret Date values
+# returned from Eclipse in epoch time format.
+ENV TZ=Europe/London
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+EXPOSE 8095
+USER 1001
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

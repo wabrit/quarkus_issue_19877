@@ -1,0 +1,28 @@
+####
+# This Dockerfile is used in order to build a distroless container that runs the Quarkus application in native (no JVM) mode
+#
+# Before building the container image run:
+#
+# ./mvnw package -Pnative
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.native-distroless -t quarkus/getting-started .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/getting-started
+#
+###
+FROM quay.io/quarkus/quarkus-distroless-image:1.0
+COPY target/*-runner /application
+
+# Set timezone to align with Eclipse; this will help us correctly interpret Date values
+# returned from Eclipse in epoch time format.
+ENV TZ=Europe/London
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+EXPOSE 8095
+USER nonroot
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

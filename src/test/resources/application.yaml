@@ -1,0 +1,8 @@
+quarkus:
+  application:
+    name: otelnative
+  http:
+    test-port: 8082
+
+erewhon:
+  user: admin
